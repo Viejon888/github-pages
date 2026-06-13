@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NYU Stern vs USC Marshall — Undergraduate Business</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────── */
+:root {
+  --bg:        #08080b;
+  --s1:        #111118;
+  --s2:        #19191f;
+  --border:    rgba(255,255,255,0.07);
+
+  --nyu:       #6d28d9;
+  --nyu-l:     #a78bfa;
+  --nyu-dim:   rgba(109,40,217,0.09);
+  --nyu-ring:  rgba(109,40,217,0.28);
+
+  --usc:       #b91c1c;
+  --usc-l:     #f87171;
+  --usc-dim:   rgba(185,28,28,0.09);
+  --usc-ring:  rgba(185,28,28,0.28);
+
+  --tx:        #f4f4f5;
+  --tx2:       #a1a1aa;
+  --tx3:       #52525b;
+  --green:     #4ade80;
+
+  --sans: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --r:    1.25rem;
+  --rl:   2rem;
+}
+
+/* ─── RESET ──────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--tx);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1}
+
+/* ─── FLOATING NAV ───────────────────────────────────────────── */
+.nav{
+  position:fixed;top:1.5rem;left:50%;transform:translateX(-50%);
+  z-index:1000;display:flex;align-items:center;gap:2rem;
+  background:rgba(8,8,11,0.78);backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--border);border-radius:100px;padding:.75rem 1.75rem;
+  white-space:nowrap;
+}
+.nav-brand{font-size:.7rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--tx)}
+.nav-dot{width:3px;height:3px;border-radius:50%;background:var(--tx3);flex-shrink:0}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{font-size:.75rem;color:var(--tx2);text-decoration:none;letter-spacing:.02em;transition:color .2s}
+.nav-links a:hover{color:var(--tx)}
+
+/* ─── HERO ───────────────────────────────────────────────────── */
+.hero{
+  min-height:100dvh;display:grid;grid-template-columns:1fr 1px 1fr;
+  position:relative;overflow:hidden;
+}
+.hero-half{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:9rem 4rem 5rem;position:relative;overflow:hidden;
+}
+.hero-half.nyu-h{background:radial-gradient(ellipse 70% 60% at 25% 70%,rgba(109,40,217,.1) 0%,transparent 70%)}
+.hero-half.usc-h{background:radial-gradient(ellipse 70% 60% at 75% 70%,rgba(185,28,28,.1) 0%,transparent 70%);align-items:flex-end;text-align:right}
+
+.hero-eyebrow{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);margin-bottom:1.5rem;opacity:0;transform:translateY(10px)}
+.hero-name{font-size:clamp(2.8rem,5.5vw,5.2rem);font-weight:900;line-height:.9;letter-spacing:-.045em;opacity:0;transform:translateY(22px)}
+.hero-name.nyu-c{color:var(--nyu-l)}
+.hero-name.usc-c{color:var(--usc-l)}
+.hero-sub{font-size:clamp(.9rem,1.6vw,1.3rem);font-weight:300;color:var(--tx2);letter-spacing:-.01em;margin-top:.6rem;opacity:0;transform:translateY(22px)}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;margin-top:1.75rem;
+  padding:.45rem 1rem;border-radius:100px;
+  font-family:var(--mono);font-size:.68rem;font-weight:600;
+  opacity:0;transform:translateY(22px);
+}
+.hero-badge.n{background:var(--nyu-dim);border:1px solid var(--nyu-ring);color:var(--nyu-l)}
+.hero-badge.u{background:var(--usc-dim);border:1px solid var(--usc-ring);color:var(--usc-l)}
+
+.hero-stats{display:flex;gap:2.25rem;margin-top:2.5rem;opacity:0;transform:translateY(22px)}
+.hero-stat-v{font-size:1.4rem;font-weight:800;letter-spacing:-.03em;color:var(--tx);display:block}
+.hero-stat-l{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-top:.2rem;display:block}
+
+.hero-divider{background:var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9rem 0}
+.hero-vs{font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.22em;color:var(--tx3);writing-mode:vertical-rl;transform:rotate(180deg);opacity:0}
+
+/* ─── MARQUEE ────────────────────────────────────────────────── */
+.marquee-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 0;overflow:hidden}
+.marquee-track{display:flex;animation:mq 55s linear infinite;width:max-content}
+.marquee-track:hover{animation-play-state:paused}
+.marquee-inner{display:flex;align-items:center}
+.mq-item{font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;color:var(--tx3);padding:0 2.25rem;white-space:nowrap;border-right:1px solid var(--border)}
+.mq-item span.n{color:var(--nyu-l)}.mq-item span.u{color:var(--usc-l)}.mq-item span.w{color:var(--tx2)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ─── LAYOUT SHELL ───────────────────────────────────────────── */
+.wrap{max-width:1380px;margin:0 auto;padding:0 2rem}
+.sec{padding:7rem 2rem;max-width:1380px;margin:0 auto}
+.ruled{border-top:1px solid var(--border)}
+.eyebrow{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);margin-bottom:.875rem}
+.sh{font-size:clamp(2rem,3.8vw,3.6rem);font-weight:800;line-height:1.01;letter-spacing:-.035em;margin-bottom:3.5rem}
+
+/* ─── BENTO OVERVIEW ─────────────────────────────────────────── */
+.bento{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  grid-auto-flow:dense;gap:1px;
+  background:var(--border);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;
+}
+.bc{background:var(--s1);padding:2.25rem 2rem;position:relative;overflow:hidden;transition:background .25s}
+.bc:hover{background:var(--s2)}
+.bc.s2{grid-column:span 2}
+.bc-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);margin-bottom:1.5rem}
+
+.twoCol{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+.colHead{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1.5rem}
+.colHead.n{color:var(--nyu-l)}.colHead.u{color:var(--usc-l)}
+.mRow{display:flex;flex-direction:column;gap:1.1rem}
+.mItem-k{font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:.2rem}
+.mItem-v{font-size:.95rem;font-weight:600;letter-spacing:-.01em;color:var(--tx)}
+.mItem-v.n{color:var(--nyu-l)}.mItem-v.u{color:var(--usc-l)}.mItem-v.g{color:var(--green)}
+
+.rank-pair{display:flex;align-items:center;gap:.875rem;margin-bottom:1.4rem}
+.rank-num{font-size:2.2rem;font-weight:900;letter-spacing:-.05em;line-height:1}
+.rank-num.n{color:var(--nyu-l)}.rank-num.u{color:var(--usc-l)}
+.rank-sep{font-family:var(--mono);font-size:.62rem;color:var(--tx3)}
+
+.loc-big{font-size:1.9rem;font-weight:900;letter-spacing:-.04em;margin-bottom:.6rem}
+.loc-desc{font-size:.8rem;color:var(--tx2);line-height:1.55;margin-bottom:1.25rem}
+.dot-list{display:flex;flex-direction:column;gap:.45rem}
+.dot-row{display:flex;align-items:flex-start;gap:.6rem;font-size:.78rem;color:var(--tx2);line-height:1.4}
+.dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:.45rem}
+.dot.n{background:var(--nyu)}.dot.u{background:var(--usc)}
+
+/* ─── TAB SYSTEM ─────────────────────────────────────────────── */
+.tab-bar{display:flex;border:1px solid var(--border);border-radius:100px;overflow:hidden;width:fit-content;margin-bottom:2.75rem}
+.tab-btn{padding:.7rem 1.875rem;font-family:var(--sans);font-size:.82rem;font-weight:600;letter-spacing:-.01em;color:var(--tx2);background:transparent;border:none;cursor:pointer;transition:all .25s}
+.tab-btn.on-n{background:var(--nyu-dim);color:var(--nyu-l)}
+.tab-btn.on-u{background:var(--usc-dim);color:var(--usc-l)}
+.tab-panel{display:none}.tab-panel.show{display:block}
+
+.curr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.cblock{background:var(--s1);padding:1.875rem}
+.cblock.hl-n{background:rgba(109,40,217,.06)}.cblock.hl-u{background:rgba(185,28,28,.06)}
+.cb-tier{font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);margin-bottom:.4rem}
+.cb-tier.n{color:var(--nyu-l)}.cb-tier.u{color:var(--usc-l)}
+.cb-name{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.6rem}
+.cb-tag{display:inline-block;font-family:var(--mono);font-size:.6rem;padding:.2rem .6rem;border-radius:100px;margin-bottom:.875rem}
+.cb-tag.n{background:var(--nyu-dim);color:var(--nyu-l);border:1px solid var(--nyu-ring)}
+.cb-tag.u{background:var(--usc-dim);color:var(--usc-l);border:1px solid var(--usc-ring)}
+.cb-desc{font-size:.8rem;color:var(--tx2);line-height:1.6}
+
+.note-bar{margin-top:1.25rem;padding:1rem 1.5rem;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);display:flex;gap:.875rem;align-items:center}
+.note-bar .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.note-bar .lbl.n{color:var(--nyu-l)}.note-bar .lbl.u{color:var(--usc-l)}
+.note-bar p{font-size:.82rem;color:var(--tx2);line-height:1.5}
+
+/* ─── SPECIALIZATIONS ACCORDION ──────────────────────────────── */
+.spec-cols{display:grid;grid-template-columns:1fr 1fr;position:relative}
+.spec-cols::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--border)}
+.spec-col{padding:0 3rem 0 0}
+.spec-col:last-child{padding:0 0 0 3rem}
+.spec-head{font-family:var(--mono);font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:1.75rem}
+.spec-head.n{color:var(--nyu-l)}.spec-head.u{color:var(--usc-l)}
+
+.acc-list{}
+.acc-item{border-bottom:1px solid var(--border)}
+.acc-item:first-child{border-top:1px solid var(--border)}
+.acc-trigger{width:100%;display:flex;align-items:center;gap:1rem;padding:.95rem 0;background:transparent;border:none;cursor:pointer;text-align:left;transition:all .2s}
+.acc-trigger:hover .acc-label{opacity:1;color:var(--tx)}
+.acc-num{font-family:var(--mono);font-size:.58rem;color:var(--tx3);min-width:1.5rem;flex-shrink:0}
+.acc-label{font-size:.9rem;font-weight:500;letter-spacing:-.01em;color:var(--tx);opacity:.7;flex:1;transition:opacity .2s}
+.acc-badge{font-family:var(--mono);font-size:.58rem;padding:.15rem .5rem;border-radius:100px}
+.acc-badge.stem{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);color:var(--green)}
+.acc-badge.opt{background:rgba(161,161,170,.07);border:1px solid var(--border);color:var(--tx3)}
+.acc-arrow{font-size:.65rem;color:var(--tx3);transition:transform .25s;flex-shrink:0}
+.acc-item.open .acc-arrow{transform:rotate(90deg)}
+.acc-body{display:none;padding:0 0 1rem 2.5rem;font-size:.78rem;color:var(--tx2);line-height:1.6}
+.acc-item.open .acc-body{display:block}
+
+.spec-box{margin-top:1.75rem;padding:1.25rem;border-radius:var(--r);border:1px solid}
+.spec-box.n{background:var(--nyu-dim);border-color:var(--nyu-ring)}
+.spec-box.u{background:var(--usc-dim);border-color:var(--usc-ring)}
+.spec-box-head{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem}
+.spec-box-head.n{color:var(--nyu-l)}.spec-box-head.u{color:var(--usc-l)}
+.joint-row{font-size:.78rem;color:var(--tx2);margin-bottom:.45rem;line-height:1.45}
+.joint-row strong{color:var(--tx)}
+.stem-pill{font-size:.58rem;padding:.1rem .4rem;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);color:var(--green);border-radius:100px;font-family:var(--mono);margin-left:.3rem;vertical-align:middle}
+
+/* ─── CAREER OUTCOMES ────────────────────────────────────────── */
+.career-split{display:grid;grid-template-columns:1fr 1fr;gap:4.5rem}
+.career-sch-name{font-size:1.25rem;font-weight:800;letter-spacing:-.03em;margin-bottom:.35rem}
+.career-sch-name.n{color:var(--nyu-l)}.career-sch-name.u{color:var(--usc-l)}
+.career-kpis{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin:1.5rem 0 2.25rem}
+.kpi-big{font-size:3rem;font-weight:900;letter-spacing:-.055em;line-height:1}
+.kpi-big.n{color:var(--nyu-l)}.kpi-big.u{color:var(--usc-l)}
+.kpi-lbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-top:.3rem}
+
+.bars-head{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);margin-bottom:1.1rem}
+.bar-item{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.9rem}
+.bar-row{display:flex;justify-content:space-between;align-items:center}
+.bar-name{font-size:.8rem;font-weight:500;color:var(--tx2)}
+.bar-pct{font-family:var(--mono);font-size:.65rem;color:var(--tx3)}
+.bar-track{height:2px;background:var(--border);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;width:0%;transition:width 1.5s cubic-bezier(.16,1,.3,1)}
+.bar-fill.n{background:var(--nyu)}.bar-fill.u{background:var(--usc)}
+
+.career-note{margin-top:1.5rem;padding:1rem 1.25rem;background:var(--s1);border:1px solid var(--border);border-radius:.875rem;font-size:.78rem;color:var(--tx2);line-height:1.55}
+
+/* ─── GLOBAL PROGRAMS ────────────────────────────────────────── */
+.global-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden}
+.gp{background:var(--s1);padding:2.75rem 2.5rem}
+.gp-head{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:2rem}
+.gp-head.n{color:var(--nyu-l)}.gp-head.u{color:var(--usc-l)}
+.gp-item{padding:1.1rem 0;border-bottom:1px solid var(--border)}
+.gp-item:last-of-type{border-bottom:none}
+.gp-name{font-size:.92rem;font-weight:600;letter-spacing:-.01em;margin-bottom:.35rem}
+.gp-desc{font-size:.78rem;color:var(--tx2);line-height:1.5}
+.gp-callout{margin-top:1.5rem;padding:.875rem 1rem;border-radius:.875rem;font-size:.78rem;line-height:1.5}
+.gp-callout.n{background:rgba(109,40,217,.08);border:1px solid var(--nyu-ring);color:var(--nyu-l)}
+.gp-callout.u{background:rgba(185,28,28,.08);border:1px solid var(--usc-ring);color:var(--usc-l)}
+
+/* ─── CAREER CHOOSER ─────────────────────────────────────────── */
+.chooser-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem}
+.ch{
+  padding:1.25rem 1.5rem;background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);cursor:pointer;transition:all .25s;
+  display:flex;flex-direction:column;gap:.75rem;
+}
+.ch:hover{background:var(--s2);border-color:rgba(255,255,255,.12)}
+.ch.wn{background:var(--nyu-dim);border-color:var(--nyu-ring)}
+.ch.wu{background:var(--usc-dim);border-color:var(--usc-ring)}
+.ch.wb{background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.12)}
+.ch-goal{font-size:.9rem;font-weight:600;letter-spacing:-.01em;color:var(--tx)}
+.ch-winner{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .6rem;border-radius:100px;width:fit-content;display:none}
+.ch.wn .ch-winner{display:block;background:var(--nyu-dim);color:var(--nyu-l);border:1px solid var(--nyu-ring)}
+.ch.wu .ch-winner{display:block;background:var(--usc-dim);color:var(--usc-l);border:1px solid var(--usc-ring)}
+.ch.wb .ch-winner{display:block;background:rgba(255,255,255,.05);color:var(--tx2);border:1px solid var(--border)}
+.ch-detail{font-size:.77rem;color:var(--tx2);line-height:1.45;display:none}
+.ch.revealed .ch-detail{display:block}
+
+/* ─── FINAL CTA CARDS ────────────────────────────────────────── */
+.cta-split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:5rem}
+.cta-card{padding:3rem;border-radius:var(--rl);border:1px solid;position:relative;overflow:hidden}
+.cta-card.nc{background:var(--nyu-dim);border-color:var(--nyu-ring)}
+.cta-card.uc{background:var(--usc-dim);border-color:var(--usc-ring)}
+.cta-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem}
+.cta-tag.n{color:var(--nyu-l)}.cta-tag.u{color:var(--usc-l)}
+.cta-h{font-size:1.7rem;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-bottom:2rem}
+.cta-reasons{list-style:none;display:flex;flex-direction:column;gap:.875rem}
+.cta-reason{display:flex;gap:.75rem;align-items:flex-start;font-size:.83rem;color:var(--tx2);line-height:1.45}
+.cta-reason::before{content:'';width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:.52rem}
+.nc .cta-reason::before{background:var(--nyu-l)}.uc .cta-reason::before{background:var(--usc-l)}
+
+/* ─── RANKINGS TABLE ─────────────────────────────────────────── */
+.rtable{width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.rtable th{text-align:left;padding:1rem 1.5rem;font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);background:var(--s1);border-bottom:1px solid var(--border)}
+.rtable th:not(:first-child){text-align:center}
+.rtable td{padding:1.2rem 1.5rem;font-size:.88rem;color:var(--tx);border-bottom:1px solid var(--border);background:var(--bg)}
+.rtable td:not(:first-child){text-align:center;font-family:var(--mono);font-weight:600}
+.rtable tr:last-child td{border-bottom:none}
+.rtable td.rn{color:var(--nyu-l)}.rtable td.ru{color:var(--usc-l)}
+
+/* ─── FOOTER ─────────────────────────────────────────────────── */
+footer{border-top:1px solid var(--border);padding:3.5rem 2rem}
+.footer-in{max-width:1380px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:2rem}
+.foot-brand{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--tx);margin-bottom:.35rem}
+.foot-meta{font-family:var(--mono);font-size:.6rem;letter-spacing:.05em;color:var(--tx3)}
+.foot-right{font-family:var(--mono);font-size:.62rem;color:var(--tx3);text-align:right;line-height:1.8}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+@media(max-width:960px){
+  .nav-links{display:none}
+  .hero{grid-template-columns:1fr;grid-template-rows:auto auto auto}
+  .hero-divider-mob{border-bottom:1px solid var(--border);margin:0 2rem}
+  .hero-half{padding:7rem 2rem 3rem}
+  .hero-half.usc-h{align-items:flex-start;text-align:left;padding-top:3rem}
+  .hero-divider{display:none}
+  .bento{grid-template-columns:repeat(2,1fr)}
+  .bc.s2{grid-column:span 2}
+  .twoCol{grid-template-columns:1fr}
+  .curr-grid{grid-template-columns:1fr}
+  .spec-cols{grid-template-columns:1fr;gap:3rem}
+  .spec-cols::before{display:none}
+  .spec-col{padding:0}.spec-col:last-child{padding:0}
+  .career-split{grid-template-columns:1fr}
+  .global-grid{grid-template-columns:1fr}
+  .chooser-grid{grid-template-columns:1fr 1fr}
+  .cta-split{grid-template-columns:1fr}
+  .footer-in{flex-direction:column;text-align:center}
+  .foot-right{text-align:center}
+}
+@media(max-width:600px){
+  .chooser-grid{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr}
+  .bc.s2{grid-column:span 1}
+  .career-kpis{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ─ NAV ──────────────────────────────────────────────────────── -->
+<nav class="nav">
+  <span class="nav-brand">Stern vs Marshall</span>
+  <div class="nav-dot"></div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#curriculum">Curriculum</a></li>
+    <li><a href="#spec">Specializations</a></li>
+    <li><a href="#careers">Careers</a></li>
+    <li><a href="#global">Global</a></li>
+    <li><a href="#choose">Choose</a></li>
+  </ul>
+</nav>
+
+<!-- ─ HERO ─────────────────────────────────────────────────────── -->
+<section class="hero">
+  <!-- NYU Half -->
+  <div class="hero-half nyu-h">
+    <p class="hero-eyebrow ha">New York University</p>
+    <h1 class="hero-name nyu-c ha">NYU<br>Stern</h1>
+    <p class="hero-sub ha">School of Business</p>
+    <div class="hero-badge n ha">#5 U.S. News 2025 &nbsp;·&nbsp; #6 Poets &amp; Quants</div>
+    <div class="hero-stats ha">
+      <div>
+        <span class="hero-stat-v">$107K</span>
+        <span class="hero-stat-l">Avg Total Comp</span>
+      </div>
+      <div>
+        <span class="hero-stat-v">98%</span>
+        <span class="hero-stat-l">Placement Rate</span>
+      </div>
+      <div>
+        <span class="hero-stat-v">2,900</span>
+        <span class="hero-stat-l">Students</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Center Rule -->
+  <div class="hero-divider">
+    <span class="hero-vs" id="hvs">VS</span>
+  </div>
+
+  <!-- USC Half -->
+  <div class="hero-half usc-h">
+    <p class="hero-eyebrow hb">University of Southern California</p>
+    <h1 class="hero-name usc-c hb">USC<br>Marshall</h1>
+    <p class="hero-sub hb">School of Business</p>
+    <div class="hero-badge u hb">#9 U.S. News 2025 &nbsp;·&nbsp; #3 Poets &amp; Quants</div>
+    <div class="hero-stats hb">
+      <div>
+        <span class="hero-stat-v">+26%</span>
+        <span class="hero-stat-l">Salary Jump (2yr)</span>
+      </div>
+      <div>
+        <span class="hero-stat-v">97.2%</span>
+        <span class="hero-stat-l">Placement Rate</span>
+      </div>
+      <div>
+        <span class="hero-stat-v">3,700+</span>
+        <span class="hero-stat-l">Students</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─ MARQUEE ───────────────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-inner">
+      <div class="mq-item">NYU Stern &mdash; <span class="n">#5 US News 2025</span></div>
+      <div class="mq-item">USC Marshall &mdash; <span class="u">#9 US News · #3 P&amp;Q</span></div>
+      <div class="mq-item">Both programs &mdash; <span class="w">128 credits · BS degree</span></div>
+      <div class="mq-item">Stern Avg Comp &mdash; <span class="n">$107,420</span></div>
+      <div class="mq-item">Marshall Salary Jump &mdash; <span class="u">+26% biggest 2yr increase</span></div>
+      <div class="mq-item">NYC Consulting Capstone &mdash; <span class="n">Required All Seniors</span></div>
+      <div class="mq-item">Experiential Learning Center &mdash; <span class="u">First in the Nation</span></div>
+      <div class="mq-item">Stern &mdash; <span class="n">12 Concentrations · 6 Tracks</span></div>
+      <div class="mq-item">Marshall &mdash; <span class="u">8 Emphases + 8 Joint Degrees</span></div>
+      <div class="mq-item">World Bachelor in Business &mdash; <span class="u">LA · Hong Kong · Milan</span></div>
+      <div class="mq-item">Stern Social Impact Core &mdash; <span class="n">First of its kind</span></div>
+      <div class="mq-item">Tuition &mdash; <span class="n">$67,430</span> Stern &nbsp;/&nbsp; <span class="u">$73,260</span> Marshall</div>
+    </div>
+    <div class="marquee-inner" aria-hidden="true">
+      <div class="mq-item">NYU Stern &mdash; <span class="n">#5 US News 2025</span></div>
+      <div class="mq-item">USC Marshall &mdash; <span class="u">#9 US News · #3 P&amp;Q</span></div>
+      <div class="mq-item">Both programs &mdash; <span class="w">128 credits · BS degree</span></div>
+      <div class="mq-item">Stern Avg Comp &mdash; <span class="n">$107,420</span></div>
+      <div class="mq-item">Marshall Salary Jump &mdash; <span class="u">+26% biggest 2yr increase</span></div>
+      <div class="mq-item">NYC Consulting Capstone &mdash; <span class="n">Required All Seniors</span></div>
+      <div class="mq-item">Experiential Learning Center &mdash; <span class="u">First in the Nation</span></div>
+      <div class="mq-item">Stern &mdash; <span class="n">12 Concentrations · 6 Tracks</span></div>
+      <div class="mq-item">Marshall &mdash; <span class="u">8 Emphases + 8 Joint Degrees</span></div>
+      <div class="mq-item">World Bachelor in Business &mdash; <span class="u">LA · Hong Kong · Milan</span></div>
+      <div class="mq-item">Stern Social Impact Core &mdash; <span class="n">First of its kind</span></div>
+      <div class="mq-item">Tuition &mdash; <span class="n">$67,430</span> Stern &nbsp;/&nbsp; <span class="u">$73,260</span> Marshall</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─ OVERVIEW ──────────────────────────────────────────────────── -->
+<div class="ruled" id="overview">
+  <div class="sec">
+    <p class="eyebrow rv">Program Overview</p>
+    <h2 class="sh rv">Side by Side</h2>
+    <div class="bento">
+      <!-- Big comparison card spanning 2 cols -->
+      <div class="bc s2">
+        <p class="bc-lbl">Core Metrics</p>
+        <div class="twoCol">
+          <div>
+            <p class="colHead n">NYU Stern</p>
+            <div class="mRow">
+              <div><p class="mItem-k">Degree</p><p class="mItem-v">BS in Business</p></div>
+              <div><p class="mItem-k">Tuition 2025–26</p><p class="mItem-v n">$67,430<span style="font-size:.7rem;font-weight:400;color:var(--tx3)">/yr</span></p></div>
+              <div><p class="mItem-k">Total Cost of Attendance</p><p class="mItem-v">~$98,796<span style="font-size:.7rem;font-weight:400;color:var(--tx3)">/yr</span></p></div>
+              <div><p class="mItem-k">Program Acceptance Rate</p><p class="mItem-v">&lt;3.8%</p></div>
+              <div><p class="mItem-k">Enrollment</p><p class="mItem-v">~2,900 students</p></div>
+              <div><p class="mItem-k">STEM Eligible</p><p class="mItem-v g">Full Degree</p></div>
+            </div>
+          </div>
+          <div>
+            <p class="colHead u">USC Marshall</p>
+            <div class="mRow">
+              <div><p class="mItem-k">Degree</p><p class="mItem-v">BS in Business Administration</p></div>
+              <div><p class="mItem-k">Tuition 2025–26</p><p class="mItem-v u">$73,260<span style="font-size:.7rem;font-weight:400;color:var(--tx3)">/yr</span></p></div>
+              <div><p class="mItem-k">Total Cost of Attendance</p><p class="mItem-v">~$99,139<span style="font-size:.7rem;font-weight:400;color:var(--tx3)">/yr</span></p></div>
+              <div><p class="mItem-k">USC Overall Acceptance Rate</p><p class="mItem-v">~11.2%</p></div>
+              <div><p class="mItem-k">Enrollment</p><p class="mItem-v">3,700+ students</p></div>
+              <div><p class="mItem-k">STEM Eligible</p><p class="mItem-v g">Select Emphases</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rankings card -->
+      <div class="bc s2">
+        <p class="bc-lbl">Rankings at a Glance</p>
+        <div style="display:flex;flex-direction:column;gap:1.5rem;margin-top:.5rem">
+          <div>
+            <p style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--tx3);margin-bottom:.5rem">U.S. News Undergrad Business (2025)</p>
+            <div class="rank-pair"><span class="rank-num n">#5</span><span class="rank-sep">vs</span><span class="rank-num u">#9</span></div>
+          </div>
+          <div>
+            <p style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--tx3);margin-bottom:.5rem">Poets &amp; Quants Undergrad (2025)</p>
+            <div class="rank-pair"><span class="rank-num n">#6</span><span class="rank-sep">vs</span><span class="rank-num u">#3</span></div>
+          </div>
+          <div style="padding:1rem;background:var(--usc-dim);border:1px solid var(--usc-ring);border-radius:.875rem">
+            <p style="font-size:.72rem;color:var(--usc-l);font-family:var(--mono);margin-bottom:.3rem">Marshall outranks Stern on P&amp;Q</p>
+            <p style="font-size:.78rem;color:var(--tx2);line-height:1.45">Poets &amp; Quants weights career outcomes and student experience heavily — a reflection of Marshall's strong salary growth trajectory.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location NYU -->
+      <div class="bc s2">
+        <p class="bc-lbl" style="color:var(--nyu-l)">Location — New York City</p>
+        <p class="loc-big">New York City</p>
+        <p class="loc-desc">The world's financial capital. Wall Street is a subway ride away, enabling year-round internships during the school year — a structural advantage no other business school can replicate.</p>
+        <div class="dot-list">
+          <div class="dot-row"><div class="dot n"></div>81.2% of Stern graduates placed within New York State</div>
+          <div class="dot-row"><div class="dot n"></div>Direct access to bulge-bracket bank recruiting on-cycle</div>
+          <div class="dot-row"><div class="dot n"></div>Year-round part-time internships alongside full course load</div>
+          <div class="dot-row"><div class="dot n"></div>NYC as a "learning lab" — embedded in the curriculum, not separate</div>
+        </div>
+      </div>
+
+      <!-- Location USC -->
+      <div class="bc s2">
+        <p class="bc-lbl" style="color:var(--usc-l)">Location — Los Angeles</p>
+        <p class="loc-big">Los Angeles</p>
+        <p class="loc-desc">The entertainment, media, and West Coast tech capital. Home to one of the most intensely loyal alumni networks in American business — the Trojan Family.</p>
+        <div class="dot-list">
+          <div class="dot-row"><div class="dot u"></div>Trojan network dominant in entertainment, RE, consulting, and tech</div>
+          <div class="dot-row"><div class="dot u"></div>Silicon Valley pipeline via USC alumni concentration in Bay Area</div>
+          <div class="dot-row"><div class="dot u"></div>Biggest 2-year salary jump of any business school — Poets &amp; Quants 2024</div>
+          <div class="dot-row"><div class="dot u"></div>Unique BCA joint degree with School of Cinematic Arts — no parallel exists</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─ CURRICULUM ────────────────────────────────────────────────── -->
+<div class="ruled" id="curriculum">
+  <div class="sec">
+    <p class="eyebrow rv">Academic Architecture</p>
+    <h2 class="sh rv">Curriculum</h2>
+
+    <div class="tab-bar rv">
+      <button class="tab-btn on-n" id="btn-nyu" onclick="switchTab('nyu')">NYU Stern</button>
+      <button class="tab-btn" id="btn-usc" onclick="switchTab('usc')">USC Marshall</button>
+    </div>
+
+    <!-- NYU Panel -->
+    <div class="tab-panel show" id="tp-nyu">
+      <div class="curr-grid">
+        <div class="cblock"><p class="cb-tier">Pillar 1</p><p class="cb-name">Liberal Arts Core</p><span class="cb-tag n">20+ units</span><p class="cb-desc">Calculus I or higher, writing, and humanities. At least 20 of 128 total units must come from non-business areas — ensuring every Stern graduate has genuine breadth.</p></div>
+        <div class="cblock"><p class="cb-tier">Pillar 2</p><p class="cb-name">Business Core</p><span class="cb-tag n">30 units</span><p class="cb-desc"><strong>Business Tools (~14u):</strong> Microeconomics, Statistics &amp; Regression, Financial Accounting, Cohort Leadership (P/F).<br><br><strong>Functional Core (~16u):</strong> Choose 4 of 6 — Managerial Accounting, Finance, IT &amp; Society, Mgmt &amp; Org, Marketing, Operations.</p></div>
+        <div class="cblock hl-n"><p class="cb-tier n">Pillar 3 — Unique to Stern</p><p class="cb-name">Social Impact Core</p><span class="cb-tag n">4 courses over 4 years</span><p class="cb-desc">The first mandatory ethics and social impact sequence at any undergraduate business school.<br><br>Y1: Business &amp; Society · Y2: Org. Communication · Y3: Law, Business &amp; Society · Y4: Professional Responsibility &amp; Leadership.<br><br>Two courses cited as models by the Carnegie Foundation.</p></div>
+        <div class="cblock"><p class="cb-tier">Pillar 4</p><p class="cb-name">Business Concentration</p><span class="cb-tag n">12 units · Required</span><p class="cb-desc">Declare at least 1 of 12 concentrations by end of junior year. A second co-concentration is permitted. All students leave with a clearly defined academic specialty.</p></div>
+        <div class="cblock"><p class="cb-tier">Pillar 5</p><p class="cb-name">Global Business Requirement</p><span class="cb-tag n">4 units + Experience</span><p class="cb-desc">All students complete Economics of Global Business (EGB). Starting with Class of 2027, a full Global Experience is mandatory — study away at one of 16 NYU global sites or 17 IBEX partner schools.</p></div>
+        <div class="cblock hl-n"><p class="cb-tier n">Pillar 6 — Unique to Stern</p><p class="cb-name">NYC Consulting Capstone</p><span class="cb-tag n">3–4 units · Required Senior</span><p class="cb-desc">Introduced 2023–24; 1,000+ completions already. Faculty-led teams spend a full semester solving real challenges for corporate partners including Microsoft and TIFIN — structured as an actual consulting engagement.<br><br><strong>44 elective units</strong> remain for minors, second major, or study away.</p></div>
+      </div>
+      <div class="note-bar">
+        <span class="lbl n">Electives</span>
+        <p>44 units available for a minor, second NYU major (via College of Arts &amp; Science), second Stern concentration, or global study. Access to 100+ minors across Tisch, Wagner, Steinhardt, and other NYU schools.</p>
+      </div>
+    </div>
+
+    <!-- USC Panel -->
+    <div class="tab-panel" id="tp-usc">
+      <div class="curr-grid">
+        <div class="cblock"><p class="cb-tier">Layer 1</p><p class="cb-name">General Education</p><span class="cb-tag u">USC-wide requirement</span><p class="cb-desc">WRIT 150 &amp; WRIT 340, MATH 118gx or higher, two semesters of economics (ECON 351x and 352x). All courses taken for a letter grade — no CR/NC electives in core.</p></div>
+        <div class="cblock"><p class="cb-tier">Layer 2</p><p class="cb-name">Business Core</p><span class="cb-tag u">Three-tiered architecture</span><p class="cb-desc"><strong>Foundational:</strong> Math, statistics, accounting, economics, communication.<br><br><strong>Functional:</strong> Finance, Marketing, Organizational Behavior, Operations.<br><br><strong>Integrative:</strong> Strategy plus a new 2-unit data modeling class introduced to strengthen analytics fluency.</p></div>
+        <div class="cblock hl-u"><p class="cb-tier u">Layer 3 — Unique to Marshall</p><p class="cb-name">Experiential Learning Center</p><span class="cb-tag u">Embedded throughout</span><p class="cb-desc">The first behavioral lab program for undergrad business in the nation — not a standalone capstone but woven into all four years. Students practice group decision-making, negotiations, presentations, and interviews with immediate recorded feedback throughout multiple courses.</p></div>
+        <div class="cblock"><p class="cb-tier">Layer 4</p><p class="cb-name">Upper-Division Electives</p><span class="cb-tag u">12 units · 3 courses</span><p class="cb-desc">300- or 400-level courses from ACCT, BAEP, BUCO, DSO, FBE, MKT, MOR, or RISK. Can also be fulfilled via a Marshall-sponsored international exchange semester abroad.</p></div>
+        <div class="cblock"><p class="cb-tier">Layer 5</p><p class="cb-name">Optional Emphasis</p><span class="cb-tag u">Optional — not required</span><p class="cb-desc">Unlike Stern's mandatory concentration, Marshall emphases are entirely optional. Students graduate with a general BSBA and may layer an emphasis for focused depth — or keep the degree generalist and exploit the free elective space instead.</p></div>
+        <div class="cblock hl-u"><p class="cb-tier u">Layer 6 — Unique to Marshall</p><p class="cb-name">Free Electives</p><span class="cb-tag u">32 units</span><p class="cb-desc">The most generous free elective block of the two programs — enough for a full minor, a double major, or deep language acquisition. Designed explicitly to leverage USC's multi-school ecosystem: Viterbi, Cinematic Arts, Price, Iovine &amp; Young.</p></div>
+      </div>
+      <div class="note-bar">
+        <span class="lbl u">Key Distinction</span>
+        <p>Marshall's "breadth with depth" philosophy maximizes flexibility — no forced specialization — while Stern's pillar system guarantees every graduate has covered ethics, global business, functional business, and a real corporate consulting engagement before graduating.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─ SPECIALIZATIONS ────────────────────────────────────────────── -->
+<div class="ruled" id="spec">
+  <div class="sec">
+    <p class="eyebrow rv">Specialization Paths</p>
+    <h2 class="sh rv">Concentrations &amp; Emphases</h2>
+    <div class="spec-cols">
+      <!-- NYU column -->
+      <div class="spec-col">
+        <p class="spec-head n">NYU Stern — 12 Concentrations (1 Required)</p>
+        <div class="acc-list">
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">01</span><span class="acc-label">Accounting</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Core pathway for students pursuing public accounting, auditing, or the BS/MS dual-degree CPA track. Pairs naturally with the Finance concentration.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">02</span><span class="acc-label">Computing &amp; Data Science</span><span class="acc-badge stem">STEM</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">STEM-eligible. Covers machine learning fundamentals, data engineering, and applied analytics — one of Stern's fastest-growing concentrations given demand from tech and finance recruiters.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">03</span><span class="acc-label">Economics — Business Economics</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Applied microeconomic analysis, industrial organization, and market structure — ideal for consulting and policy-adjacent careers.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">04</span><span class="acc-label">Econometrics &amp; Quantitative Economics</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Heavy quant emphasis — regression analysis, time series, causal inference. Strong fit for hedge fund and quant research roles.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">05</span><span class="acc-label">Entrepreneurship</span><span class="acc-badge opt">Co-Conc. only</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Available only as a co-concentration alongside another primary concentration. Covers venture creation, startup finance, and new venture strategy.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">06</span><span class="acc-label">Finance</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">The most popular Stern concentration. Covers corporate finance, valuation, derivatives, and capital markets — direct pathway to IB and PE recruiting in NYC.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">07</span><span class="acc-label">Management &amp; Organizations</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Org behavior, leadership, strategy implementation, and people analytics. Pairs well with consulting and general management tracks.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">08</span><span class="acc-label">Marketing</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Consumer behavior, brand strategy, digital marketing, and marketing analytics. NYC market gives direct access to major agency and brand internships.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">09</span><span class="acc-label">Operations</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Supply chain, process optimization, and operations strategy. Strong fit for consulting and tech operations roles.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">10</span><span class="acc-label">Real Estate</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">One of the most respected RE programs in the country given NYC's position as the global real estate hub. Covers development, finance, and investment.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">11</span><span class="acc-label">Statistics</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Probability theory, statistical modeling, and data-driven decision making. Bridges business and quantitative analysis.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">12</span><span class="acc-label">Sustainable Business</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">ESG strategy, corporate sustainability, impact investing, and responsible business. One of Stern's newer and fastest-growing offerings.</div></div>
+        </div>
+        <div class="spec-box n" style="margin-top:1.75rem">
+          <p class="spec-box-head n">6 Interdisciplinary Tracks (Supplemental)</p>
+          <p style="font-size:.8rem;color:var(--tx2);line-height:1.55">Asset Pricing · Business Analytics · Corporate Finance · Digital Marketing · Luxury Marketing · Management Consulting — curated cross-disciplinary roadmaps that sit on top of concentrations to provide sharper career focus.</p>
+        </div>
+        <div class="spec-box" style="margin-top:1rem;border-color:var(--border);background:var(--s1)">
+          <p class="spec-box-head" style="color:var(--tx3)">100+ Minors Across NYU</p>
+          <p style="font-size:.8rem;color:var(--tx2);line-height:1.55">Tisch School of the Arts · Wagner School of Public Service · Steinhardt School of Culture — among the broadest inter-school minor ecosystem of any business school.</p>
+        </div>
+      </div>
+
+      <!-- USC column -->
+      <div class="spec-col">
+        <p class="spec-head u">USC Marshall — 8 Emphases (Optional) + Joint Degrees</p>
+        <div class="acc-list">
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">01</span><span class="acc-label">Business Analytics</span><span class="acc-badge stem">STEM</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">STEM-eligible. Covers data science methods, predictive analytics, and decision support systems. Strong fit for tech and consulting firms recruiting on the West Coast.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">02</span><span class="acc-label">Communication</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Business communication, media strategy, and organizational messaging. Particularly relevant for students targeting marketing, PR, or entertainment-adjacent roles in the LA market.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">03</span><span class="acc-label">Entrepreneurship &amp; Innovation</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">New venture creation, startup ecosystems, design thinking, and innovation strategy. Anchored by the Greif Center for Entrepreneurial Studies, one of the most active undergrad entrepreneurship programs in the US.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">04</span><span class="acc-label">Finance</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Corporate finance, investment analysis, and financial markets — with strong Trojan alumni connections in LA private equity, investment management, and family offices.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">05</span><span class="acc-label">Leadership &amp; Innovation</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Organizational leadership, change management, and strategic innovation. Designed for students aiming for general management or intrapreneurship roles at large companies.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">06</span><span class="acc-label">Marketing</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Consumer insights, brand building, digital strategy, and marketing analytics. LA's entertainment industry creates unmatched experiential learning opportunities for marketing students.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">07</span><span class="acc-label">Real Estate Finance</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Development, investment analysis, and real estate capital markets — with deep ties to LA's commercial and residential RE ecosystem, one of the most active in the world.</div></div>
+          <div class="acc-item"><button class="acc-trigger" onclick="toggleAcc(this)"><span class="acc-num">08</span><span class="acc-label">Risk Management</span><span class="acc-arrow">&#9656;</span></button><div class="acc-body">Unique to Marshall among the two programs — covers enterprise risk, financial risk, and insurance. Direct pipeline to risk management and actuarial roles in finance and consulting.</div></div>
+        </div>
+        <div class="spec-box u" style="margin-top:1.75rem">
+          <p class="spec-box-head u">Joint &amp; Specialized Degrees</p>
+          <div class="joint-row"><strong>ACFN</strong> — Accounting &amp; Finance · joint w/ Leventhal School</div>
+          <div class="joint-row"><strong>CS + Business</strong> — joint w/ Viterbi School of Engineering</div>
+          <div class="joint-row"><strong>BCA</strong> — Business of Cinematic Arts · joint w/ School of Cinematic Arts</div>
+          <div class="joint-row"><strong>BUAI</strong> — AI for Business · joint w/ Viterbi <span class="stem-pill">STEM</span></div>
+          <div class="joint-row"><strong>REFD</strong> — Real Estate Finance &amp; Development · joint w/ Price School</div>
+          <div class="joint-row"><strong>BUIN</strong> — Business of Innovation · joint w/ Iovine &amp; Young <span class="stem-pill">STEM</span></div>
+          <div class="joint-row"><strong>WBB</strong> — World Bachelor in Business · LA / Hong Kong / Milan</div>
+          <div class="joint-row"><strong>BAIR</strong> — Business Admin + International Relations · joint w/ Dornsife</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─ CAREER OUTCOMES ────────────────────────────────────────────── -->
+<div class="ruled" id="careers">
+  <div class="sec">
+    <p class="eyebrow rv">Where Graduates Land</p>
+    <h2 class="sh rv">Career Outcomes</h2>
+    <div class="career-split">
+      <!-- NYU -->
+      <div>
+        <div style="margin-bottom:.35rem"><span class="career-sch-name n">NYU Stern</span></div>
+        <p style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--tx3);margin-bottom:1.5rem">Class of 2025</p>
+        <div class="career-kpis">
+          <div><p class="kpi-big n" data-target="98">0</p><p style="font-size:1.5rem;font-weight:900;color:var(--nyu-l);letter-spacing:-.05em;margin-top:-.5rem">%</p><p class="kpi-lbl">Placement Rate</p></div>
+          <div><p class="kpi-big n" style="font-size:2.4rem">$107K</p><p class="kpi-lbl">Avg Total Comp</p></div>
+          <div><p class="kpi-big n" style="font-size:2.4rem">53%</p><p class="kpi-lbl">Into Finance Roles</p></div>
+          <div><p class="kpi-big n" style="font-size:2.4rem">98.4%</p><p class="kpi-lbl">Complete Internship</p></div>
+        </div>
+        <p class="bars-head">Top Industries 2021–24</p>
+        <div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Investment Banking</span><span class="bar-pct">31.2%</span></div><div class="bar-track"><div class="bar-fill n" data-w="62.4"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Management Consulting</span><span class="bar-pct">10.5%</span></div><div class="bar-track"><div class="bar-fill n" data-w="21"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Investment / Portfolio Mgmt</span><span class="bar-pct">10.0%</span></div><div class="bar-track"><div class="bar-fill n" data-w="20"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Financial Services</span><span class="bar-pct">9.8%</span></div><div class="bar-track"><div class="bar-fill n" data-w="19.6"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Technology</span><span class="bar-pct">8.3%</span></div><div class="bar-track"><div class="bar-fill n" data-w="16.6"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Accounting</span><span class="bar-pct">8.1%</span></div><div class="bar-track"><div class="bar-fill n" data-w="16.2"></div></div></div>
+        </div>
+        <div class="career-note">Avg total comp grew <strong style="color:var(--nyu-l)">22.7%</strong> since 2021. Geographic concentration: <strong style="color:var(--nyu-l)">81.2%</strong> of domestic placements in New York State.</div>
+      </div>
+
+      <!-- USC -->
+      <div>
+        <div style="margin-bottom:.35rem"><span class="career-sch-name u">USC Marshall</span></div>
+        <p style="font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;color:var(--tx3);margin-bottom:1.5rem">Recent Undergraduates</p>
+        <div class="career-kpis">
+          <div><p class="kpi-big u">97.2%</p><p class="kpi-lbl">Placement Rate</p></div>
+          <div><p class="kpi-big u" style="font-size:2.4rem">+26%</p><p class="kpi-lbl">Salary Jump (2yr)</p></div>
+          <div><p class="kpi-big u" style="font-size:2.4rem">#3</p><p class="kpi-lbl">Poets &amp; Quants</p></div>
+          <div><p class="kpi-big u" style="font-size:2.4rem">LA</p><p class="kpi-lbl">Primary Market</p></div>
+        </div>
+        <p class="bars-head">Dominant Industries</p>
+        <div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Consulting</span><span class="bar-pct">Top Sector</span></div><div class="bar-track"><div class="bar-fill u" data-w="56"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Financial Services</span><span class="bar-pct">Top Sector</span></div><div class="bar-track"><div class="bar-fill u" data-w="48"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Technology</span><span class="bar-pct">Top Sector</span></div><div class="bar-track"><div class="bar-fill u" data-w="44"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Entertainment &amp; Media</span><span class="bar-pct">Unique Strength</span></div><div class="bar-track"><div class="bar-fill u" data-w="36"></div></div></div>
+          <div class="bar-item"><div class="bar-row"><span class="bar-name">Real Estate</span><span class="bar-pct">Strong</span></div><div class="bar-track"><div class="bar-fill u" data-w="24"></div></div></div>
+        </div>
+        <div class="career-note">Marshall recorded the <strong style="color:var(--usc-l)">biggest 2-year starting salary increase</strong> of any business school per Poets &amp; Quants 2024. The Trojan network is exceptionally concentrated in LA entertainment, RE, consulting, and tech.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─ GLOBAL PROGRAMS ────────────────────────────────────────────── -->
+<div class="ruled" id="global">
+  <div class="sec">
+    <p class="eyebrow rv">International Exposure</p>
+    <h2 class="sh rv">Global Programs</h2>
+    <div class="global-grid">
+      <div class="gp">
+        <p class="gp-head n">NYU Stern — Global Required (Class of 2027+)</p>
+        <div class="gp-item"><p class="gp-name">NYU Study Away (16 Sites)</p><p class="gp-desc">Spend at least one term at any of NYU's 16 global study sites worldwide — Abu Dhabi, Shanghai, London, Paris, Madrid, Berlin, Florence, Prague, Buenos Aires, Accra, Sydney, and more. The most expansive network of any school on this list.</p></div>
+        <div class="gp-item"><p class="gp-name">IBEX Exchange Program</p><p class="gp-desc">A semester at one of 17 partner business schools in Europe and Asia. Available to juniors and seniors. Schools include top institutions across the UK, France, Germany, Singapore, Hong Kong, and Japan.</p></div>
+        <div class="gp-item"><p class="gp-name">Stern Around the World (SAW)</p><p class="gp-desc">Short-term immersion courses pairing semester coursework with travel to Mexico, Japan, Singapore, Costa Rica, and Hawaii. Structured around real business environments in each destination.</p></div>
+        <div class="gp-item"><p class="gp-name">BPE — London &amp; Shanghai (Built-In)</p><p class="gp-desc">Business &amp; Political Economy students spend sophomore fall in London and junior spring in Shanghai — two mandatory abroad semesters built directly into the degree structure.</p></div>
+        <p class="gp-callout n">NYU describes itself as "the world's first truly global university" — with campuses across six continents, this isn't marketing language.</p>
+      </div>
+      <div class="gp">
+        <p class="gp-head u">USC Marshall — Global Optional (Rich Portfolio)</p>
+        <div class="gp-item"><p class="gp-name">Global Leadership Program (GLP)</p><p class="gp-desc">By invitation for top incoming students. A year-long leadership seminar plus a spring break immersive trip to Thailand — building a cohort of Marshall's highest-potential undergrads from day one.</p></div>
+        <div class="gp-item"><p class="gp-name">LINC — First-Year for All Students</p><p class="gp-desc">Open to all first-year Marshall students. A 2-unit course paired with an 8–10 day immersive trip to Dubai, Singapore, Seoul, Tokyo, or Madrid. Rare for a first-year program to offer this level of international access.</p></div>
+        <div class="gp-item"><p class="gp-name">Winslow-Maxwell Global Internships</p><p class="gp-desc">8–10 week overseas internships in London, Madrid, Berlin, Rome, Prague, Sydney, Singapore, Hong Kong, and Tokyo. One of the most geographically diverse internship programs in undergraduate business.</p></div>
+        <div class="gp-item"><p class="gp-name">World Bachelor in Business (WBB)</p><p class="gp-desc">The only program of its kind: a 4-year degree spanning USC (Los Angeles), HKUST (Hong Kong), and Bocconi (Milan). Full cultural immersion and academic collaboration across three continents. Accepted students are admitted directly to all three institutions.</p></div>
+        <div class="gp-item"><p class="gp-name">MISIP — Indonesia &amp; Thailand</p><p class="gp-desc">8–10 week internships in Southeast Asia led by prominent USC alumni, offering emerging market exposure unlike any program at Stern.</p></div>
+        <p class="gp-callout u">Marshall's WBB is widely regarded as the most globally immersive undergraduate business degree offered by any American university.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─ CAREER CHOOSER ────────────────────────────────────────────── -->
+<div class="ruled" id="choose">
+  <div class="sec">
+    <p class="eyebrow rv">Find Your Fit</p>
+    <h2 class="sh rv">By Career Goal</h2>
+    <p style="font-size:.82rem;color:var(--tx3);font-family:var(--mono);letter-spacing:.04em;margin-bottom:3rem" class="rv">Tap any goal to reveal the recommendation</p>
+
+    <div class="chooser-grid">
+      <div class="ch" onclick="pick(this,'wn','NYU Stern','NYC proximity gives Stern students unrivaled access to bulge-bracket banks. 31.2% of Stern graduates go into investment banking — no other undergrad program comes close at this scale.')"><span class="ch-goal">Investment Banking / Wall Street</span><span class="ch-winner">NYU Stern</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wu','USC Marshall','The BCA joint degree with School of Cinematic Arts is unique in the world. Combined with the Trojan network\'s deep entertainment industry reach, Marshall has no peer for this path.')"><span class="ch-goal">Entertainment &amp; Media</span><span class="ch-winner">USC Marshall</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wb','Both — Different Markets','Stern\'s NYC Consulting Capstone mirrors real engagement structure. Marshall\'s Trojan network opens West Coast MBB doors. Goal is NYC consulting → Stern. LA or tech consulting → Marshall.')"><span class="ch-goal">Management Consulting</span><span class="ch-winner">Both — Different Markets</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wu','USC Marshall','The BUAI joint degree with Viterbi is STEM-eligible and arguably the most forward-looking tech-business credential available at either school. Trojan network has strong Silicon Valley reach.')"><span class="ch-goal">Technology / AI (West Coast)</span><span class="ch-winner">USC Marshall</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wu','USC Marshall','The Greif Center for Entrepreneurship, BAEP curriculum, and BUIN joint degree (Iovine &amp; Young) create Marshall\'s distinctive entrepreneurship ecosystem — amplified by LA\'s startup density.')"><span class="ch-goal">Entrepreneurship &amp; Startups</span><span class="ch-winner">USC Marshall</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wb','Both — Different Structures','Stern offers a dedicated Real Estate concentration with NYC market access. Marshall offers the RE Finance emphasis and the REFD joint degree with Price School of Public Policy. Each is elite.')"><span class="ch-goal">Real Estate</span><span class="ch-winner">Both — Different Structures</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wn','NYU Stern','The integrated BS/MS in Accounting dual degree provides the 150 credits required for NY CPA licensure in a single, accelerated program. No equivalent exists at Marshall.')"><span class="ch-goal">Accounting / CPA Track</span><span class="ch-winner">NYU Stern</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wn','NYU Stern (BPE)','The Business &amp; Political Economy program — mandatory London and Shanghai semesters built in — combined with NYU\'s 16 global study sites creates an unmatched international business credential.')"><span class="ch-goal">International Business</span><span class="ch-winner">NYU Stern (BPE)</span><p class="ch-detail"></p></div>
+      <div class="ch" onclick="pick(this,'wb','Both — STEM-Eligible','Stern\'s Computing &amp; Data Science concentration is STEM-eligible (full degree). Marshall\'s Business Analytics emphasis is STEM-eligible. Both have strong analytics placement into tech and finance.')"><span class="ch-goal">Data Analytics / Quant</span><span class="ch-winner">Both — STEM-Eligible</span><p class="ch-detail"></p></div>
+    </div>
+
+    <!-- CTA CARDS -->
+    <div class="cta-split">
+      <div class="cta-card nc">
+        <p class="cta-tag n">NYU Stern</p>
+        <h3 class="cta-h">Choose Stern to be at the center of finance.</h3>
+        <ul class="cta-reasons">
+          <li class="cta-reason">Finance or IB are primary goals, and NYC internships during the year are a structural advantage you want to use</li>
+          <li class="cta-reason">A mandatory, four-year ethics and social impact curriculum resonates with how you want to be trained</li>
+          <li class="cta-reason">You want access to NYU's 16 global study sites or the BPE's built-in London and Shanghai semesters</li>
+          <li class="cta-reason">The BTE program (business + computer science + entrepreneurship) matches your interdisciplinary interests</li>
+          <li class="cta-reason">You want the integrated BS/MS Accounting dual degree for CPA licensure in an accelerated track</li>
+        </ul>
+      </div>
+      <div class="cta-card uc">
+        <p class="cta-tag u">USC Marshall</p>
+        <h3 class="cta-h">Choose Marshall to have LA's ecosystem behind you.</h3>
+        <ul class="cta-reasons">
+          <li class="cta-reason">Entertainment, tech, real estate, or consulting on the West Coast is the target — Marshall's network is unmatched there</li>
+          <li class="cta-reason">Interdisciplinary joint degrees with engineering, cinematic arts, AI, or public policy genuinely appeal to you</li>
+          <li class="cta-reason">The Trojan network's intensity — they hire each other, aggressively — is a compelling multi-decade differentiator</li>
+          <li class="cta-reason">You want 32 free elective units and the flexibility of optional (not mandatory) specialization</li>
+          <li class="cta-reason">The World Bachelor in Business (LA, Hong Kong, Milan) is a once-in-a-generation academic opportunity you can't find anywhere else</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─ RANKINGS ───────────────────────────────────────────────────── -->
+<div class="ruled">
+  <div class="sec">
+    <p class="eyebrow rv">Full Ranking Data</p>
+    <h2 class="sh rv">By Source</h2>
+    <table class="rtable">
+      <thead><tr><th>Ranking Source</th><th>NYU Stern</th><th>USC Marshall</th></tr></thead>
+      <tbody>
+        <tr><td>U.S. News Undergraduate Business (2025)</td><td class="rn">#5</td><td class="ru">#9</td></tr>
+        <tr><td>Poets &amp; Quants Undergraduate (2025)</td><td class="rn">#6</td><td class="ru">#3</td></tr>
+        <tr><td>Financial Times MBA (2025)</td><td class="rn">#31</td><td class="ru">#50</td></tr>
+        <tr><td>Times Higher Education (Business)</td><td class="rn">#17</td><td class="ru">#49</td></tr>
+        <tr><td>QS World University (Business)</td><td class="rn">#17</td><td class="ru">#72</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:1rem;font-size:.72rem;color:var(--tx3);font-family:var(--mono);letter-spacing:.04em">Note: MBA and global rankings reflect graduate programs and institutional research output — not a direct measure of undergraduate program quality.</p>
+  </div>
+</div>
+
+<!-- ─ FOOTER ─────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-in">
+    <div>
+      <p class="foot-brand">Stern vs Marshall</p>
+      <p class="foot-meta">Undergraduate Business Comparison · Data sourced from published 2025 institutional reports</p>
+    </div>
+    <div class="foot-right">
+      <p>NYU Stern #5 · USC Marshall #9 · US News 2025</p>
+      <p>Both programs: 128 credits · BS degree · ~$99K total cost/yr</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ─ SCRIPTS ────────────────────────────────────────────────────── -->
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* HERO REVEAL */
+const tl = gsap.timeline({delay:.25});
+tl.to('.ha',{opacity:1,y:0,duration:.85,stagger:.12,ease:'power3.out'})
+  .to('.hb',{opacity:1,y:0,duration:.85,stagger:.12,ease:'power3.out'},'<.1')
+  .to('#hvs',{opacity:1,duration:1,ease:'power2.out'},'<.2');
+
+/* SCROLL REVEALS */
+gsap.utils.toArray('.rv').forEach(el=>{
+  gsap.from(el,{opacity:0,y:18,duration:.75,ease:'power3.out',
+    scrollTrigger:{trigger:el,start:'top 88%',once:true}});
+});
+
+/* BENTO STAGGER */
+gsap.utils.toArray('.bento').forEach(g=>{
+  gsap.from(g.querySelectorAll('.bc'),{opacity:0,y:28,duration:.65,stagger:.08,ease:'power3.out',
+    scrollTrigger:{trigger:g,start:'top 78%',once:true}});
+});
+
+/* SPEC ITEMS */
+gsap.utils.toArray('.acc-item').forEach((el,i)=>{
+  gsap.from(el,{opacity:0,x:-12,duration:.45,ease:'power2.out',delay:(i%12)*.035,
+    scrollTrigger:{trigger:el,start:'top 92%',once:true}});
+});
+
+/* CAREER BAR FILL */
+document.querySelectorAll('.bar-fill').forEach(b=>{
+  gsap.to(b,{width:b.dataset.w+'%',duration:1.35,ease:'power3.out',
+    scrollTrigger:{trigger:b,start:'top 90%',once:true}});
+});
+
+/* CHOOSER STAGGER */
+gsap.utils.toArray('.ch').forEach((el,i)=>{
+  gsap.from(el,{opacity:0,scale:.95,duration:.45,ease:'back.out(1.4)',delay:(i%3)*.06,
+    scrollTrigger:{trigger:el,start:'top 88%',once:true}});
+});
+
+/* CTA CARDS */
+gsap.utils.toArray('.cta-card').forEach((el,i)=>{
+  gsap.from(el,{opacity:0,y:30,duration:.7,ease:'power3.out',delay:i*.1,
+    scrollTrigger:{trigger:el,start:'top 85%',once:true}});
+});
+
+/* RANKING TABLE ROWS */
+gsap.utils.toArray('.rtable tbody tr').forEach((r,i)=>{
+  gsap.from(r,{opacity:0,x:-10,duration:.45,ease:'power2.out',delay:i*.08,
+    scrollTrigger:{trigger:r,start:'top 90%',once:true}});
+});
+
+/* NAV BORDER ON SCROLL */
+ScrollTrigger.create({start:80,
+  onEnter:()=>document.querySelector('.nav').style.borderColor='rgba(255,255,255,.12)',
+  onLeaveBack:()=>document.querySelector('.nav').style.borderColor='rgba(255,255,255,.07)'
+});
+
+/* ─ TABS ─ */
+function switchTab(s){
+  ['nyu','usc'].forEach(x=>{
+    document.getElementById('tp-'+x).classList.toggle('show',x===s);
+    document.getElementById('btn-'+x).classList.remove('on-n','on-u');
+  });
+  document.getElementById('btn-'+s).classList.add(s==='nyu'?'on-n':'on-u');
+}
+
+/* ─ ACCORDION ─ */
+function toggleAcc(btn){
+  const item=btn.closest('.acc-item');
+  const isOpen=item.classList.contains('open');
+  item.closest('.acc-list').querySelectorAll('.acc-item.open').forEach(i=>i.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+/* ─ CAREER CHOOSER ─ */
+function pick(el,cls,label,detail){
+  document.querySelectorAll('.ch').forEach(c=>{
+    c.classList.remove('wn','wu','wb','revealed');
+    c.querySelector('.ch-detail').textContent='';
+  });
+  el.classList.add(cls,'revealed');
+  el.querySelector('.ch-detail').textContent=detail;
+  gsap.fromTo(el,{scale:.97},{scale:1,duration:.3,ease:'back.out(1.7)'});
+}
+</script>
+</body>
+</html>
