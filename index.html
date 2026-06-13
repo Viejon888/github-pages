@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissions Atlas — Common Data Set Review 2024–26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,800;0,9..144,900;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1612;
+    --ink-soft: #4a4239;
+    --paper: #f4ede1;
+    --paper-warm: #ebe1cf;
+    --paper-deep: #e0d3b8;
+    --rule: #1a1612;
+    --accent: #b8482a;
+    --accent-deep: #8a3520;
+    --gold: #c89b3c;
+    --olive: #6b6539;
+    --ink-line: rgba(26, 22, 18, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter Tight', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.5;
+    font-feature-settings: 'ss01', 'ss02', 'cv11';
+    overflow-x: hidden;
+  }
+
+  /* Paper texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(184, 72, 42, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(107, 101, 57, 0.04) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+  }
+
+  main { position: relative; z-index: 2; }
+
+  /* MASTHEAD */
+  .masthead {
+    border-bottom: 3px double var(--rule);
+    padding: 24px 48px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .masthead-left, .masthead-right { display: flex; gap: 24px; }
+
+  .masthead-tag {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .masthead-tag .label {
+    font-size: 9px;
+    color: var(--ink-soft);
+    opacity: 0.7;
+  }
+
+  .masthead-tag .value {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 48px 60px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 60px;
+    align-items: end;
+  }
+
+  .hero-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(72px, 12vw, 200px);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    font-variation-settings: 'opsz' 144;
+  }
+
+  .hero-title .it {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .hero-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    text-align: right;
+    line-height: 1.8;
+    max-width: 240px;
+  }
+
+  .hero-meta strong { color: var(--ink); display: block; font-size: 13px; margin-bottom: 4px; }
+
+  /* DECK */
+  .deck {
+    padding: 32px 48px 48px;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 24px;
+  }
+
+  .deck-lead {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    line-height: 1.35;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-soft);
+    padding-right: 24px;
+    border-right: 1px solid var(--ink-line);
+  }
+
+  .deck-lead .drop {
+    font-weight: 800;
+    font-style: normal;
+    color: var(--ink);
+  }
+
+  .stat-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-left: 4px;
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+  }
+
+  .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* SECTION HEADERS */
+  .section-head {
+    padding: 60px 48px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 40px;
+    border-top: 3px double var(--rule);
+    margin-top: 0;
+  }
+
+  .section-head h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    flex: 1;
+  }
+
+  .section-head h2 .it {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .section-head .marker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .section-head .marker .num {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+  }
+
+  /* RANKING BAR — visual admit rate scale */
+  .ranking-strip {
+    padding: 0 48px 60px;
+  }
+
+  .ranking-bar {
+    height: 56px;
+    background: linear-gradient(90deg,
+      #8a3520 0%,
+      #b8482a 12%,
+      #c89b3c 32%,
+      #6b6539 60%,
+      #3d4a35 100%);
+    position: relative;
+    border: 1px solid var(--rule);
+  }
+
+  .rank-marker {
+    position: absolute;
+    top: -8px;
+    bottom: -8px;
+    width: 1px;
+    background: var(--ink);
+  }
+
+  .rank-marker::after {
+    content: attr(data-label);
+    position: absolute;
+    top: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 2px 4px;
+    border: 1px solid var(--rule);
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  .rank-scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* CARDS GRID */
+  .schools {
+    padding: 0 48px 80px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .school-card {
+    background: var(--paper-warm);
+    border: 1px solid var(--rule);
+    padding: 28px 32px 32px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.3, 1.2), box-shadow 0.4s ease;
+  }
+
+  .school-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+
+  .school-card.featured {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .school-card.featured .card-stat-label,
+  .school-card.featured .card-meta-label,
+  .school-card.featured .factor-label { color: rgba(244, 237, 225, 0.6); }
+
+  .school-card.featured .funnel-bar.applied { background: rgba(244, 237, 225, 0.2); }
+  .school-card.featured .funnel-bar.admitted { background: var(--gold); }
+  .school-card.featured .funnel-bar.enrolled { background: var(--accent); }
+
+  .school-card.featured .card-divider { border-color: rgba(244, 237, 225, 0.2); }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .card-name {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    flex: 1;
+  }
+
+  .card-rank {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid currentColor;
+    padding: 4px 8px;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  .card-tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    opacity: 0.85;
+  }
+
+  .school-card.featured .card-tagline { color: rgba(244, 237, 225, 0.7); }
+
+  /* ADMIT FUNNEL */
+  .funnel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .funnel-row {
+    display: grid;
+    grid-template-columns: 70px 1fr 80px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .funnel-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+  }
+
+  .school-card.featured .funnel-label { color: rgba(244, 237, 225, 0.6); }
+
+  .funnel-track {
+    height: 14px;
+    background: var(--paper-deep);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .school-card.featured .funnel-track { background: rgba(244, 237, 225, 0.08); }
+
+  .funnel-bar {
+    height: 100%;
+    background: var(--ink);
+    transition: width 1.2s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  .funnel-bar.admitted { background: var(--accent); }
+  .funnel-bar.enrolled { background: var(--gold); }
+
+  .funnel-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  /* METRICS ROW */
+  .card-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--ink-line);
+  }
+
+  .school-card.featured .card-metrics { border-color: rgba(244, 237, 225, 0.2); }
+
+  .metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .card-stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+  }
+
+  .card-stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+
+  .card-stat-value.accent { color: var(--accent); }
+  .school-card.featured .card-stat-value.accent { color: var(--gold); }
+
+  .card-stat-unit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* META TAGS */
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--ink-line);
+  }
+
+  .card-divider {
+    border-top: 1px dashed var(--ink-line);
+    margin: 4px 0;
+  }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+    font-size: 12px;
+    align-items: baseline;
+  }
+
+  .card-meta-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+  }
+
+  .meta-value {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 7px;
+    border: 1px solid currentColor;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+
+  .pill.req { color: var(--accent-deep); background: rgba(184, 72, 42, 0.08); }
+  .pill.opt { color: var(--olive); }
+  .pill.blind { color: var(--ink); background: var(--paper-deep); }
+
+  /* OMISSIONS */
+  .omissions {
+    padding-top: 12px;
+    border-top: 1px dashed var(--ink-line);
+  }
+
+  .omissions-head {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .school-card.featured .omissions-head { color: var(--gold); }
+
+  .omissions-head::before {
+    content: '✕';
+    font-size: 11px;
+  }
+
+  .omissions-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .omissions-list li {
+    font-size: 12px;
+    line-height: 1.4;
+    padding-left: 12px;
+    position: relative;
+    color: var(--ink-soft);
+  }
+
+  .school-card.featured .omissions-list li { color: rgba(244, 237, 225, 0.75); }
+
+  .omissions-list li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  /* PATTERNS SECTION */
+  .patterns {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 80px 48px;
+    border-top: 3px double var(--rule);
+  }
+
+  .patterns-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: end;
+    margin-bottom: 60px;
+  }
+
+  .patterns h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+  }
+
+  .patterns h2 .it {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold);
+  }
+
+  .patterns-intro {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    line-height: 1.5;
+    font-style: italic;
+    color: rgba(244, 237, 225, 0.75);
+  }
+
+  .patterns-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 60px;
+  }
+
+  .pattern-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(244, 237, 225, 0.2);
+  }
+
+  .pattern-num {
+    font-family: 'Fraunces', serif;
+    font-size: 56px;
+    font-weight: 900;
+    line-height: 0.8;
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .pattern-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .pattern-body {
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(244, 237, 225, 0.8);
+  }
+
+  .pattern-body strong { color: var(--paper); font-weight: 600; }
+
+  /* EUROPE SPECIAL */
+  .europe-banner {
+    padding: 60px 48px;
+    background: var(--paper-warm);
+    border-top: 3px double var(--rule);
+    border-bottom: 3px double var(--rule);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .europe-banner h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin-bottom: 12px;
+  }
+
+  .europe-banner h3 .it {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  /* COLOPHON */
+  .colophon {
+    padding: 40px 48px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+  }
+
+  .colophon .accent { color: var(--accent); }
+
+  /* responsive */
+  @media (max-width: 980px) {
+    .deck { grid-template-columns: 1fr 1fr; }
+    .deck-lead { grid-column: 1 / -1; border-right: none; border-bottom: 1px solid var(--ink-line); padding-bottom: 16px; }
+    .schools { grid-template-columns: 1fr; padding: 0 24px 60px; }
+    .hero { grid-template-columns: 1fr; padding: 60px 24px 40px; }
+    .hero-meta { text-align: left; }
+    .section-head { padding: 40px 24px 20px; flex-direction: column; align-items: flex-start; }
+    .section-head h2 { font-size: 40px; }
+    .ranking-strip { padding: 0 24px 40px; }
+    .patterns { padding: 60px 24px; }
+    .patterns-head { grid-template-columns: 1fr; gap: 24px; margin-bottom: 40px; }
+    .patterns h2 { font-size: 48px; }
+    .patterns-grid { grid-template-columns: 1fr; gap: 32px; }
+    .europe-banner { grid-template-columns: 1fr; padding: 40px 24px; }
+    .masthead { padding: 16px 24px 12px; flex-direction: column; gap: 8px; align-items: flex-start; }
+    .masthead-left, .masthead-right { gap: 16px; }
+  }
+
+  /* entrance animations */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .school-card { animation: slideUp 0.6s ease backwards; }
+  .school-card:nth-child(1) { animation-delay: 0.05s; }
+  .school-card:nth-child(2) { animation-delay: 0.1s; }
+  .school-card:nth-child(3) { animation-delay: 0.15s; }
+  .school-card:nth-child(4) { animation-delay: 0.2s; }
+  .school-card:nth-child(5) { animation-delay: 0.25s; }
+  .school-card:nth-child(6) { animation-delay: 0.3s; }
+  .school-card:nth-child(7) { animation-delay: 0.35s; }
+  .school-card:nth-child(8) { animation-delay: 0.4s; }
+  .school-card:nth-child(9) { animation-delay: 0.45s; }
+  .school-card:nth-child(10) { animation-delay: 0.5s; }
+  .school-card:nth-child(11) { animation-delay: 0.55s; }
+  .school-card:nth-child(12) { animation-delay: 0.6s; }
+  .school-card:nth-child(13) { animation-delay: 0.65s; }
+  .school-card:nth-child(14) { animation-delay: 0.7s; }
+</style>
+</head>
+<body>
+
+<main>
+
+<header class="masthead">
+  <div class="masthead-left">
+    <div class="masthead-tag"><span class="label">Vol. 01</span><span class="value">№ 2026</span></div>
+    <div class="masthead-tag"><span class="label">Edition</span><span class="value">Spring</span></div>
+    <div class="masthead-tag"><span class="label">Source</span><span class="value">CDS 2024–26</span></div>
+  </div>
+  <div class="masthead-right">
+    <div class="masthead-tag"><span class="label">Format</span><span class="value">Editorial / Data</span></div>
+    <div class="masthead-tag"><span class="label">Schools</span><span class="value">14 Surveyed</span></div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1 class="hero-title">Admissions<br><span class="it">Atlas.</span></h1>
+  <div class="hero-meta">
+    <strong>A cross-school review</strong>
+    fourteen institutions • twelve United States • two European • compiled from each Common Data Set, Section C, plus the closest equivalent disclosures for Bocconi & IE.
+  </div>
+</section>
+
+<section class="deck">
+  <p class="deck-lead">
+    <span class="drop">What schools choose</span> not to publish is often more revealing than what they do. This atlas reads each Common Data Set as a document of intent — <em>included</em> means reported; <em>omitted</em> means deliberately blanked.
+  </p>
+  <div class="stat-block">
+    <span class="stat-label">Most selective</span>
+    <span class="stat-value">3.61<span style="font-size:24px;">%</span></span>
+    <span class="stat-sub">Stanford</span>
+  </div>
+  <div class="stat-block">
+    <span class="stat-label">Highest yield</span>
+    <span class="stat-value">81.9<span style="font-size:24px;">%</span></span>
+    <span class="stat-sub">Stanford</span>
+  </div>
+  <div class="stat-block">
+    <span class="stat-label">Most apps</span>
+    <span class="stat-value">145k</span>
+    <span class="stat-sub">UCLA</span>
+  </div>
+  <div class="stat-block">
+    <span class="stat-label">Test-required</span>
+    <span class="stat-value">2 / 12</span>
+    <span class="stat-sub">UT, Georgetown</span>
+  </div>
+</section>
+
+<!-- ===== SECTION: THE FUNNEL ===== -->
+
+<header class="section-head">
+  <h2>The <span class="it">Funnel</span>.</h2>
+  <div class="marker">
+    <span class="num">I.</span>
+    Admit rates, ordered<br>most → least selective
+  </div>
+</header>
+
+<div class="ranking-strip">
+  <div class="ranking-bar">
+    <div class="rank-marker" style="left: 3%;" data-label="Stanford 3.6%"></div>
+    <div class="rank-marker" style="left: 11%;" data-label="Penn 5.4%"></div>
+    <div class="rank-marker" style="left: 28%;" data-label="UCLA 9.4%"></div>
+    <div class="rank-marker" style="left: 36%;" data-label="USC 9.8%"></div>
+    <div class="rank-marker" style="left: 50%;" data-label="BU 11.1%"></div>
+    <div class="rank-marker" style="left: 65%;" data-label="Geo 12.9%"></div>
+    <div class="rank-marker" style="left: 78%;" data-label="BC 16.2%"></div>
+    <div class="rank-marker" style="left: 95%;" data-label="UT 26.6%"></div>
+  </div>
+  <div class="rank-scale">
+    <span>0%</span><span>5%</span><span>10%</span><span>15%</span><span>20%</span><span>25%</span><span>30%</span>
+  </div>
+</div>
+
+<!-- ===== SCHOOL CARDS ===== -->
+
+<section class="schools">
+
+  <!-- STANFORD -->
+  <article class="school-card featured">
+    <div class="card-head">
+      <h3 class="card-name">Stanford</h3>
+      <span class="card-rank">№ 01 · 3.61%</span>
+    </div>
+    <p class="card-tagline">"Admit rate and yield are not printed as fields — calculable, but deliberately blank. A Stanford signature."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">57,326</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:3.6%"></div></div><span class="funnel-num">2,067</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:2.95%"></div></div><span class="funnel-num">1,693</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">81.9%</span><span class="card-stat-unit">highest in set</span></div>
+      <div class="metric"><span class="card-stat-label">Avg GPA</span><span class="card-stat-value">3.94</span><span class="card-stat-unit">97.8% top decile</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1510–70</span><span class="card-stat-unit">ACT 34–35</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill req">required Fall '26</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">C7 V.Imp.</span><span class="meta-value">Rigor, rank, GPA, essay, recs, ECs, talent, character (8 factors)</span></div>
+      <div class="meta-row"><span class="card-meta-label">Transfer</span><span class="meta-value">4,120 → 65 → 56 · <strong>1.6%</strong> (most selective transfer in set)</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>Admit rate & yield fields left blank by design</li>
+        <li>Residency breakdown — entirely absent</li>
+        <li>Race/ethnicity row removed from C7 grid post-SFFA</li>
+        <li>REA numerical fields blank this year (published last year)</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- COLUMBIA -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">Columbia</h3>
+      <span class="card-rank">№ 02 · 3.86%</span>
+    </div>
+    <p class="card-tagline">"Permanently test-optional. Every GPA cell blank — a quiet legacy of the 2022 US News data scandal."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">60,247</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:3.86%"></div></div><span class="funnel-num">2,325</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:2.46%"></div></div><span class="funnel-num">1,483</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">63.8%</span><span class="card-stat-unit">strong</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1510–60</span><span class="card-stat-unit">44% submit</span></div>
+      <div class="metric"><span class="card-stat-label">ED share</span><span class="card-stat-value">~34%</span><span class="card-stat-unit">of class</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill opt">test-optional · permanent</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">C7 V.Imp.</span><span class="meta-value">7 factors — heavy academic weighting; talent Important; legacy Considered</span></div>
+      <div class="meta-row"><span class="card-meta-label">ED rate</span><span class="meta-value">6,007 apps → 795 admits · <strong>~13.2%</strong></span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>All waitlist numeric cells blank despite policy box checked</li>
+        <li>Entire C11 GPA grid + average GPA suppressed</li>
+        <li>No Early Action offered</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- NORTHEASTERN -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">Northeastern</h3>
+      <span class="card-rank">№ 03 · 5.22%</span>
+    </div>
+    <p class="card-tagline">"Boston-only figures. NUin, Oakland, and London cohorts excluded — true rate estimated at ~9–12%."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">98,425</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:5.22%"></div></div><span class="funnel-num">5,133</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:2.8%"></div></div><span class="funnel-num">2,759</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">53.8%</span><span class="card-stat-unit">Boston only</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1450–20</span><span class="card-stat-unit">24% submit</span></div>
+      <div class="metric"><span class="card-stat-label">ED rate</span><span class="card-stat-value">43.1%</span><span class="card-stat-unit">3,466 apps</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill opt">test-optional</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">Quirk</span><span class="meta-value">Tests marked V.Imp despite only 24% submitting — interesting policy signal</span></div>
+      <div class="meta-row"><span class="card-meta-label">Residency</span><span class="meta-value">In-state 10.8% · OOS 4.6% · Int'l 3.8%</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>NUin / Oakland / Global Scholars excluded — biggest structural omission in this review</li>
+        <li>All waitlist quantitative fields blank</li>
+        <li>C12 average GPA blank · EA counts not disclosed</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- UPENN -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">UPenn / Wharton</h3>
+      <span class="card-rank">№ 04 · 5.40%</span>
+    </div>
+    <p class="card-tagline">"One CDS for four undergraduate schools. Wharton's individual admit rate? Not in the document."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">65,236</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:5.4%"></div></div><span class="funnel-num">3,523</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:3.67%"></div></div><span class="funnel-num">2,395</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">68.0%</span><span class="card-stat-unit">Penn's record</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1510–70</span><span class="card-stat-unit">50% submit</span></div>
+      <div class="metric"><span class="card-stat-label">ED rate</span><span class="card-stat-value">14.2%</span><span class="card-stat-unit">~35% of class</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill req">required Fall '26</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">Waitlist</span><span class="meta-value">2,958 offered · 2,288 accepted · <strong>66 admitted</strong></span></div>
+      <div class="meta-row"><span class="card-meta-label">Transfer</span><span class="meta-value">4,521 → 145 → 100 · <strong>3.21%</strong> (more selective than freshman)</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>Per-school breakdown (Wharton vs CAS vs SEAS vs Nursing)</li>
+        <li>Legacy elaboration field — blank despite public debate</li>
+        <li>Program-specific notes field blank</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- UCLA -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">UCLA</h3>
+      <span class="card-rank">№ 05 · 9.41%</span>
+    </div>
+    <p class="card-tagline">"Test-blind. 145,086 applications — most in the set. The only newest cycle here, 2025–26."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">145,086</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:9.41%"></div></div><span class="funnel-num">13,659</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:4.51%"></div></div><span class="funnel-num">6,553</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">48.0%</span></div>
+      <div class="metric"><span class="card-stat-label">Avg GPA</span><span class="card-stat-value">3.94</span><span class="card-stat-unit">58.8% had 4.0</span></div>
+      <div class="metric"><span class="card-stat-label">Transfer</span><span class="card-stat-value">23.4%</span><span class="card-stat-unit">28,487 apps</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill blind">test-blind · UC system</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">C7 V.Imp.</span><span class="meta-value">Rigor, GPA, essay only — minimal academic-only weighting</span></div>
+      <div class="meta-row"><span class="card-meta-label">Waitlist</span><span class="meta-value">20,563 offered · 13,612 accepted · <strong>1,514 admitted</strong> (11.1% off-list)</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>All of C9 — no SAT/ACT data; system is test-blind by mandate</li>
+        <li>Class rank not collected · neither ED nor EA offered</li>
+        <li>Race/ethnicity Not Considered (Prop 209, since 1996)</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- NYU -->
+  <article class="school-card featured">
+    <div class="card-head">
+      <h3 class="card-name">NYU</h3>
+      <span class="card-rank">№ 06 · 9.23%</span>
+    </div>
+    <p class="card-tagline">"Formally checks 'No' to a waitlist. Has suppressed those numbers since ~2017."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">110,807</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:9.23%"></div></div><span class="funnel-num">10,232</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:5.11%"></div></div><span class="funnel-num">5,666</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">~51%</span></div>
+      <div class="metric"><span class="card-stat-label">Avg GPA</span><span class="card-stat-value">3.81</span><span class="card-stat-unit">99% submit</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1480–50</span><span class="card-stat-unit">28% submit</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill opt">test-optional</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">C7 V.Imp.</span><span class="meta-value">Rigor, GPA, essay, recs, character — tests only "Considered"</span></div>
+      <div class="meta-row"><span class="card-meta-label">Transfer</span><span class="meta-value">10,155 → 2,243 → 989 · <strong>22.1%</strong></span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>Waitlist policy answered "No" — all C2 fields blank</li>
+        <li>Race/ethnicity row blank (no column checked at all)</li>
+        <li>ED applicant/admit numbers blank — outlier vs. peers</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- USC -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">USC</h3>
+      <span class="card-rank">№ 07 · 9.81%</span>
+    </div>
+    <p class="card-tagline">"Class rank marked Not Considered — yet they collect the data and report a 73% top-decile rate."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">82,027</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:9.81%"></div></div><span class="funnel-num">8,050</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:4.25%"></div></div><span class="funnel-num">3,489</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">43.3%</span></div>
+      <div class="metric"><span class="card-stat-label">Avg GPA</span><span class="card-stat-value">3.80</span><span class="card-stat-unit">73% top decile</span></div>
+      <div class="metric"><span class="card-stat-label">Transfer</span><span class="card-stat-value">21.6%</span><span class="card-stat-unit">11,019 apps</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill opt">test-optional</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">C7 V.Imp.</span><span class="meta-value">Rigor, GPA, tests, essay, recs all V.Imp; first-gen & legacy Considered</span></div>
+      <div class="meta-row"><span class="card-meta-label">Cycle '25</span><span class="meta-value">Launching ED for the 2025–26 cycle</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>All waitlist cells blank — USC uses none</li>
+        <li>SAT composite 25/75 omitted — only sub-scores reported</li>
+        <li>Residency breakdown intentionally blank</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- BU -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">Boston University</h3>
+      <span class="card-rank">№ 08 · 11.1%</span>
+    </div>
+    <p class="card-tagline">"One of the few peers to elevate demonstrated interest to 'Important'. Test-optional through 2028."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">78,769</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:11.1%"></div></div><span class="funnel-num">8,749</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:4.15%"></div></div><span class="funnel-num">3,268</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">37.4%</span></div>
+      <div class="metric"><span class="card-stat-label">Avg GPA</span><span class="card-stat-value">3.90</span><span class="card-stat-unit">92% top decile</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1430–10</span><span class="card-stat-unit">33% submit</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill opt">test-optional through 2028</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">Waitlist</span><span class="meta-value">15,339 placed · 8,996 accepted · <strong>18 admitted</strong></span></div>
+      <div class="meta-row"><span class="card-meta-label">ED rate</span><span class="meta-value">6,854 apps → 1,936 admits · <strong>28.2%</strong> (ED I + ED II)</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>ACT Writing percentiles blank</li>
+        <li>GPA bands below 3.25 — all 0% or blank (a hard floor)</li>
+        <li>C20 removed entirely from BU's CDS template</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- TUFTS -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">Tufts</h3>
+      <span class="card-rank">№ 09 · 11.5%</span>
+    </div>
+    <p class="card-tagline">"The most consistent 'we don't care about rank or interest' school in the survey."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">34,432</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:11.5%"></div></div><span class="funnel-num">3,957</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:5.23%"></div></div><span class="funnel-num">1,801</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">45.5%</span></div>
+      <div class="metric"><span class="card-stat-label">Top decile</span><span class="card-stat-value">85%</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1480–40</span><span class="card-stat-unit">38% submit</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill opt">test-optional through Fall '26</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">Rounds</span><span class="meta-value">ED I (Nov 4) · ED II (Jan 6) · no Early Action</span></div>
+      <div class="meta-row"><span class="card-meta-label">C7 V.Imp.</span><span class="meta-value">Rigor, GPA, essay, recs · class rank Not Considered</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>All ACT sub-scores — only composite reported</li>
+        <li>Entire C11 GPA grid + C12 average GPA blank</li>
+        <li>ED applicant/admit numbers blank despite both rounds offered</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- GEORGETOWN -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">Georgetown</h3>
+      <span class="card-rank">№ 10 · 12.9%</span>
+    </div>
+    <p class="card-tagline">"Eight Very Important factors — exceptionally academic-heavy. The only school here not on the Common App (until '26)."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">26,131</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:12.9%"></div></div><span class="funnel-num">3,374</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:6.03%"></div></div><span class="funnel-num">1,575</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">46.7%</span></div>
+      <div class="metric"><span class="card-stat-label">Top decile</span><span class="card-stat-value">85%</span></div>
+      <div class="metric"><span class="card-stat-label">SAT mid</span><span class="card-stat-value">1400–40</span><span class="card-stat-unit">78% submit</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill req">test-required Fall '26</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">Round</span><span class="meta-value">Restrictive Early Action · Nov 1 deadline · Dec 15 notification</span></div>
+      <div class="meta-row"><span class="card-meta-label">Transfer</span><span class="meta-value">2,278 → 135 → 85 · <strong>5.9%</strong> (SAT/ACT required)</span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>Religious affiliation Not Considered despite Jesuit identity</li>
+        <li>Entire C11 grid + C12 average GPA all 0.00% / blank</li>
+        <li>School-by-school breakdown (College, SFS, MSB, NHS) never reported</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- BC -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">Boston College</h3>
+      <span class="card-rank">№ 11 · 16.2%</span>
+    </div>
+    <p class="card-tagline">"Notable gender gap: women admitted at 13.7%, men at 19.9%. Religious affiliation 'Considered' but not weighted."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">34,779</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:16.2%"></div></div><span class="funnel-num">5,632</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:6.88%"></div></div><span class="funnel-num">2,394</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">42.5%</span></div>
+      <div class="metric"><span class="card-stat-label">Top decile</span><span class="card-stat-value">90%</span></div>
+      <div class="metric"><span class="card-stat-label">ED rate</span><span class="card-stat-value">33.4%</span><span class="card-stat-unit">ED I + II</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill opt">test-optional</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">SAT mid</span><span class="meta-value">1460–1520 (30% submit) · ACT 33–35 (15%)</span></div>
+      <div class="meta-row"><span class="card-meta-label">Waitlist</span><span class="meta-value">7,444 offered · 4,139 accepted · <strong>352 admitted</strong></span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>Interview row in C7 — no column checked at all (BC does not interview)</li>
+        <li>All C11/C12 GPA fields entirely blank — BC does not report GPA</li>
+        <li>ACT Writing blank · no Early Action</li>
+      </ul>
+    </div>
+  </article>
+
+  <!-- UT AUSTIN -->
+  <article class="school-card">
+    <div class="card-head">
+      <h3 class="card-name">UT Austin</h3>
+      <span class="card-rank">№ 12 · 26.6%</span>
+    </div>
+    <p class="card-tagline">"Every academic factor only 'Considered' — never Important. The auto-admit law removes individual weighting."</p>
+
+    <div class="funnel">
+      <div class="funnel-row"><span class="funnel-label">Applied</span><div class="funnel-track"><div class="funnel-bar applied" style="width:100%"></div></div><span class="funnel-num">72,885</span></div>
+      <div class="funnel-row"><span class="funnel-label">Admitted</span><div class="funnel-track"><div class="funnel-bar admitted" style="width:26.6%"></div></div><span class="funnel-num">19,417</span></div>
+      <div class="funnel-row"><span class="funnel-label">Enrolled</span><div class="funnel-track"><div class="funnel-bar enrolled" style="width:12.64%"></div></div><span class="funnel-num">9,210</span></div>
+    </div>
+
+    <div class="card-metrics">
+      <div class="metric"><span class="card-stat-label">Yield</span><span class="card-stat-value accent">47.4%</span></div>
+      <div class="metric"><span class="card-stat-label">In-state</span><span class="card-stat-value">37.7%</span><span class="card-stat-unit">42,926 apps</span></div>
+      <div class="metric"><span class="card-stat-label">OOS</span><span class="card-stat-value">10.1%</span><span class="card-stat-unit">23,015 apps</span></div>
+    </div>
+
+    <div class="card-meta">
+      <div class="meta-row"><span class="card-meta-label">Tests</span><span class="meta-value"><span class="pill req">test-required</span></span></div>
+      <div class="meta-row"><span class="card-meta-label">Int'l rate</span><span class="meta-value"><strong>12.9%</strong> · 6,944 apps</span></div>
+      <div class="meta-row"><span class="card-meta-label">Transfer</span><span class="meta-value">10,055 → 2,267 → <strong>1,704</strong></span></div>
+    </div>
+
+    <div class="omissions">
+      <div class="omissions-head">Purposely omitted</div>
+      <ul class="omissions-list">
+        <li>All of C9, C10, C11, C12 — biggest omission of any school in this review</li>
+        <li>Race/ethnicity row entirely absent from C7 grid</li>
+        <li>Early Action C22 blank — uses Oct 15 priority deadline informally</li>
+      </ul>
+    </div>
+  </article>
+
+</section>
+
+<!-- ===== EUROPE BANNER ===== -->
+
+<section class="europe-banner">
+  <div>
+    <h3>Across the <span class="it">Atlantic.</span></h3>
+    <p style="font-family:'Fraunces',serif;font-style:italic;font-size:17px;line-height:1.5;color:var(--ink-soft);">
+      Italian and Spanish institutions operate under different reporting regimes. Bocconi and IE publish formula-driven, transparent admission rules — but no acceptance rates. The inverse of US schools, which publish the funnel but obscure the formula.
+    </p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div style="background:var(--paper);border:1px solid var(--rule);padding:20px;">
+      <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;">Bocconi</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-soft);margin-bottom:12px;">Milan · Italy</div>
+      <div style="font-size:13px;line-height:1.5;">
+        <strong>55%</strong> test score + <strong>45%</strong> GPA (grades 10–11). No essays, no recs, no extracurriculars (except WBB program).
+      </div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;">
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">Class size</span><strong>~2,700 BSc</strong></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">Tuition</span><strong>€16,700/yr</strong></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">Int'l share</span><strong>~33%</strong></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">Tests</span><strong>Bocconi / SAT / ACT</strong></div>
+      </div>
+    </div>
+    <div style="background:var(--paper);border:1px solid var(--rule);padding:20px;">
+      <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:800;letter-spacing:-0.02em;margin-bottom:4px;">IE University</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-soft);margin-bottom:12px;">Madrid / Segovia · Spain</div>
+      <div style="font-size:13px;line-height:1.5;">
+        Five-stage process: application → IEU Test → <strong>Kira Talent</strong> video assessment → interview → committee. Rolling admissions.
+      </div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;">
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">Admit (est.)</span><strong>~32%</strong></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">Int'l share</span><strong>82%</strong></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">SAT 25/75</span><strong>1,270–1,460</strong></div>
+        <div><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--ink-soft);text-transform:uppercase;display:block;">Tests</span><strong>IEU / SAT / ACT / LNAT</strong></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PATTERNS ===== -->
+
+<section class="patterns">
+  <div class="patterns-head">
+    <h2>Patterns<br>worth <span class="it">noting.</span></h2>
+    <p class="patterns-intro">Seven cross-cutting observations from reading every school's CDS line by line. The most selective institutions tend to publish the least.</p>
+  </div>
+
+  <div class="patterns-grid">
+    <div class="pattern-item">
+      <span class="pattern-num">01</span>
+      <h4 class="pattern-title">Admit rate suppression at the top</h4>
+      <p class="pattern-body"><strong>Stanford</strong> doesn't print its admit rate or yield. <strong>Northeastern</strong> reports only its Boston subset. <strong>Columbia</strong> withholds all GPA and waitlist data. The most selective schools publish the least.</p>
+    </div>
+    <div class="pattern-item">
+      <span class="pattern-num">02</span>
+      <h4 class="pattern-title">Race / ethnicity, three ways post-SFFA</h4>
+      <p class="pattern-body">Three approaches: <strong>(a)</strong> row deleted from the grid (Stanford), <strong>(b)</strong> row present but no column checked (NYU, UT), <strong>(c)</strong> row marked Not Considered (UCLA, pre-existing under Prop 209).</p>
+    </div>
+    <div class="pattern-item">
+      <span class="pattern-num">03</span>
+      <h4 class="pattern-title">GPA disclosure is the most uneven field</h4>
+      <p class="pattern-body"><strong>Tufts, BC, Columbia, Georgetown, Northeastern, UT Austin</strong> all leave GPA distributions blank. NYU, BU, Stanford, UCLA, USC, UPenn report them. No common standard.</p>
+    </div>
+    <div class="pattern-item">
+      <span class="pattern-num">04</span>
+      <h4 class="pattern-title">Demonstrated interest splits the field</h4>
+      <p class="pattern-body">"Considered" or higher at <strong>NYU, BU, Northeastern</strong>. Explicitly Not Considered at Columbia, Stanford, Tufts, Georgetown, UPenn, USC, UCLA, BC. A signal of how schools manage yield.</p>
+    </div>
+    <div class="pattern-item">
+      <span class="pattern-num">05</span>
+      <h4 class="pattern-title">Legacy still alive at most privates</h4>
+      <p class="pattern-body">"Considered" at <strong>UPenn, USC, BC, Tufts, Stanford, Columbia, BU</strong>. Not Considered at NYU, UCLA, Northeastern, Georgetown. UT does not consider it (state law).</p>
+    </div>
+    <div class="pattern-item">
+      <span class="pattern-num">06</span>
+      <h4 class="pattern-title">Test-required is now rare</h4>
+      <p class="pattern-body">In this group, only <strong>UT Austin</strong> and <strong>Georgetown</strong> required tests for the 2024–25 reported cycle. <strong>UPenn</strong> and <strong>Stanford</strong> announced a return to required for Fall 2026.</p>
+    </div>
+    <div class="pattern-item" style="grid-column: 1 / -1;">
+      <span class="pattern-num">07</span>
+      <h4 class="pattern-title">Europe inverts the disclosure model</h4>
+      <p class="pattern-body"><strong>Bocconi</strong> publishes the exact admission formula (55/45 split). <strong>IE</strong> publishes its five-stage process and credential thresholds. Neither publishes acceptance rates. US schools publish the funnel and obscure the formula — Europe publishes the formula and obscures the funnel.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="colophon">
+  Compiled April 2026 <span class="accent">·</span> Source: each institution's Common Data Set § C, plus Bocconi & IE admissions disclosures <span class="accent">·</span> "Included" reflects reported data; "purposely omitted" reflects deliberate non-disclosure
+</footer>
+
+</main>
+
+</body>
+</html>
